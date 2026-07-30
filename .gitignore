@@ -1,0 +1,16 @@
+# Herramientas y dependencias (se reconstruyen con rokit/wally install)
+/Packages
+/ServerPackages
+/DevPackages
+
+# Archivos de Roblox Studio (Rojo los reconstruye desde el código)
+*.rbxl
+*.rbxlx
+*.rbxl.lock
+*.rbxlx.lock
+
+# Sistema
+.DS_Store
+
+# Logs varios
+*.log
