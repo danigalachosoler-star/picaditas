@@ -13,8 +13,8 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Knit = require(ReplicatedStorage.Packages.Knit)
-local BallConfig = require(ReplicatedStorage.Shared.BallConfig)
 local RhythmMath = require(ReplicatedStorage.Shared.RhythmMath)
+local SpeedConfig = require(ReplicatedStorage.Shared.SpeedConfig)
 local TimingConfig = require(ReplicatedStorage.Shared.TimingConfig)
 
 type PlayerState = {
@@ -70,12 +70,16 @@ function ComboService:_getOrCreateState(player: Player): PlayerState
 		return state
 	end
 
+	-- Atajo de pruebas: en Studio puedes arrancar ya con combo alto para ver
+	-- la velocidad máxima. En el juego publicado esto siempre vale 0.
+	local startCombo = if RunService:IsStudio() then math.max(SpeedConfig.DebugStartCombo, 0) else 0
+
 	state = {
-		combo = 0,
+		combo = startCombo,
 		-- Arrancamos el ritmo unos segundos en el futuro: así al entrar te da
 		-- tiempo a ver el balón antes de que los toques empiecen a contar.
 		cycleStart = Workspace:GetServerTimeNow() + TimingConfig.GracePeriod,
-		cycleDuration = BallConfig.CycleDuration,
+		cycleDuration = RhythmMath.GetCycleDuration(startCombo),
 		-- Toques ya resueltos (acertados o perdidos). Empieza en -1 porque el
 		-- primer toque del ciclo es el número 0.
 		lastResolvedBeat = -1,
@@ -87,14 +91,34 @@ function ComboService:_getOrCreateState(player: Player): PlayerState
 	return state
 end
 
--- El cliente llama a esto al arrancar para saber desde cuándo cuenta su ciclo.
--- Así dibuja el balón con el mismo reloj con el que el servidor juzga.
-function ComboService:GetRhythmState(player: Player)
-	local state = self:_getOrCreateState(player)
+-- Re-ancla el ciclo: cambia la duración según el combo actual y recoloca el
+-- origen del reloj. ESTA ES LA PARTE DELICADA del paso 3.
+--
+-- El origen nuevo se expresa siempre como un INSTANTE ABSOLUTO acordado
+-- (`anchorTime`), nunca como "ahora". Da igual que el servidor lo calcule con
+-- retraso o que al cliente le llegue el aviso 80ms después: los dos aplican la
+-- misma fórmula al mismo instante, así que llegan al mismo sitio. Si anclásemos
+-- en "ahora", el "ahora" del servidor y el del cliente serían distintos y el
+-- balón daría un salto en pantalla.
+--
+-- Tras re-anclar, el toque en `anchorTime` es el número 0 y el siguiente el 1.
+function ComboService:_reanchor(state: PlayerState, anchorTime: number)
+	state.cycleDuration = RhythmMath.GetCycleDuration(state.combo)
+	state.cycleStart = anchorTime
+	state.lastResolvedBeat = 0
+end
+
+function ComboService:_getRhythmPayload(state: PlayerState)
 	return {
 		startTime = state.cycleStart,
 		duration = state.cycleDuration,
 	}
+end
+
+-- El cliente llama a esto al arrancar para saber desde cuándo cuenta su ciclo.
+-- Así dibuja el balón con el mismo reloj con el que el servidor juzga.
+function ComboService:GetRhythmState(player: Player)
+	return self:_getRhythmPayload(self:_getOrCreateState(player))
 end
 
 function ComboService.Client:GetRhythmState(player: Player)
@@ -138,18 +162,26 @@ function ComboService:_handleInput(player: Player, clientTime: any)
 	-- Pulses bien o mal, ese toque queda consumido: no hay segundos intentos.
 	state.lastResolvedBeat = beat
 
-	local judgement = RhythmMath.Judge(offset)
+	local judgement = RhythmMath.Judge(offset, state.cycleDuration)
 	if judgement == "Miss" then
 		self:_breakCombo(player, state, "Miss")
 		return
 	end
 
+	-- El instante IDEAL del toque que acaba de acertar. Ojo: no es cuándo
+	-- pulsó (pudo ir 50ms pronto), sino el momento exacto en que el balón
+	-- toca abajo. Es un instante que cliente y servidor ya tenían acordado,
+	-- y por eso sirve de ancla limpia para el ciclo nuevo.
+	local beatTime = state.cycleStart + beat * state.cycleDuration
+
 	state.combo += 1
 	state.rallyActive = true
+	self:_reanchor(state, beatTime)
 
 	self.Client.PicaditaResult:Fire(player, {
 		result = judgement,
 		combo = state.combo,
+		rhythm = self:_getRhythmPayload(state),
 	})
 end
 
@@ -178,10 +210,22 @@ function ComboService:_breakCombo(player: Player, state: PlayerState, reason: st
 	state.combo = 0
 	state.rallyActive = false
 
+	-- Perder el combo devuelve el balón a la velocidad base, que puede ser un
+	-- frenazo enorme (de 0.35s a 0.8s de golpe). Aquí no hay ningún toque que
+	-- sirva de ancla, así que anclamos "hacia atrás": calculamos dónde está el
+	-- balón AHORA y colocamos el origen del ciclo nuevo de forma que caiga
+	-- justo en esa misma posición. El balón sigue desde donde estaba y solo
+	-- cambia el ritmo al que se mueve a partir de ahí.
+	local now = Workspace:GetServerTimeNow()
+	local phase = RhythmMath.GetPhase(state.cycleStart, state.cycleDuration, now)
+	local newDuration = RhythmMath.GetCycleDuration(state.combo)
+	self:_reanchor(state, now - phase * newDuration)
+
 	self.Client.PicaditaResult:Fire(player, {
 		result = reason,
 		combo = 0,
 		lostCombo = lostCombo,
+		rhythm = self:_getRhythmPayload(state),
 	})
 end
 

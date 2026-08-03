@@ -5,6 +5,7 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Knit = require(ReplicatedStorage.Packages.Knit)
 
@@ -24,6 +25,7 @@ local ComboHudController = Knit.CreateController({
 function ComboHudController:KnitInit()
 	self._comboLabel = nil
 	self._feedbackLabel = nil
+	self._speedLabel = nil
 	-- Contador para que un mensaje viejo no borre a uno más nuevo al expirar.
 	self._messageToken = 0
 end
@@ -38,6 +40,10 @@ function ComboHudController:KnitStart()
 	ComboService.PicaditaResult:Connect(function(payload)
 		self:_onResult(payload)
 	end)
+
+	if self._speedLabel then
+		self:_showSpeed(ComboService:GetRhythmState():expect().duration)
+	end
 end
 
 function ComboHudController:_onResult(payload)
@@ -47,6 +53,14 @@ function ComboHudController:_onResult(payload)
 	if feedback then
 		self:_showMessage(feedback.text, feedback.color)
 	end
+
+	if self._speedLabel and payload.rhythm then
+		self:_showSpeed(payload.rhythm.duration)
+	end
+end
+
+function ComboHudController:_showSpeed(duration: number)
+	self._speedLabel.Text = string.format("ciclo %.3fs", duration)
 end
 
 function ComboHudController:_showMessage(text: string, color: Color3)
@@ -98,6 +112,26 @@ function ComboHudController:_build()
 	feedback.Text = ""
 	feedback.Parent = gui
 	self._feedbackLabel = feedback
+
+	-- Lectura de la velocidad actual, solo en Studio: sirve para afinar la
+	-- curva de SpeedConfig viendo el número mientras juegas.
+	if not RunService:IsStudio() then
+		return
+	end
+
+	local speed = Instance.new("TextLabel")
+	speed.Name = "SpeedDebug"
+	speed.BackgroundTransparency = 1
+	speed.Size = UDim2.fromScale(0.2, 0.03)
+	speed.Position = UDim2.fromScale(0.01, 0.95)
+	speed.Font = Enum.Font.Code
+	speed.TextScaled = true
+	speed.TextXAlignment = Enum.TextXAlignment.Left
+	speed.TextColor3 = Color3.fromRGB(170, 170, 170)
+	speed.TextStrokeTransparency = 0.6
+	speed.Text = ""
+	speed.Parent = gui
+	self._speedLabel = speed
 end
 
 return ComboHudController

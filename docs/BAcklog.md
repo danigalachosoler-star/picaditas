@@ -12,7 +12,7 @@ Lo que hay que hacer e ideas pendientes. Para tareas del día a día con reparto
 - [ ] Monedas: sumar según golpe y combo. Ver [[Economía y monedas]].
 - [ ] 1 personaje básico con animación de picadita.
 - [ ] Guardado de datos del jugador (DataStore): monedas y récord.
-- [ ] Aceleración de la barra según combo.
+- [x] Aceleración del balón según combo (curva smoothstep con techo).
 
 ## Fase 2 (después del MVP, NO ahora)
 

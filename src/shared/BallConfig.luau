@@ -5,9 +5,8 @@
 
 local BallConfig = {}
 
--- Segundos que tarda un ciclo COMPLETO (subir + bajar).
--- Bájalo para que el balón vaya más rápido, súbelo para que vaya más lento.
-BallConfig.CycleDuration = 0.8
+-- ¿Buscas la velocidad del balón? Ya no está aquí: ahora depende del combo.
+-- Mírala en SpeedConfig.luau (BaseCycleDuration es la de combo 0).
 
 -- Altura máxima que alcanza el balón por encima de su posición base, en studs.
 BallConfig.BounceHeight = 4

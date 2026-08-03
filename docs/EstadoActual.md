@@ -20,6 +20,7 @@ Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
   - `InputController` (cliente): captura espacio vía ContextActionService (botón táctil en móvil incluido).
   - `ComboHudController` (cliente): número de combo + mensajes de feedback.
   - El balón ya no lleva contador propio: se dibuja desde el reloj sincronizado del servidor.
+- **Paso 3: aceleración por combo.** `SpeedConfig` (curva) + re-anclaje del ciclo en el servidor. El ciclo va de 0.8s a 0.35s a lo largo de 175 de combo, con curva smoothstep. Al fallar vuelve a la velocidad base. HUD muestra el ciclo actual en Studio para afinar.
 
 ## 🔜 Siguiente paso inmediato
 
@@ -27,7 +28,7 @@ Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
 
 ## 🎯 Después de eso
 
-Aceleración del ciclo según el combo (el servidor cambia la duración y re-ancla el ciclo), animación de picadita del personaje, y guardado con DataStore.
+Animación de picadita del personaje, guardado con DataStore, y la capa 2 (barra de skill épica).
 
 ## Alcance del MVP (recordatorio)
 

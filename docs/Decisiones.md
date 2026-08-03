@@ -27,10 +27,14 @@ Bitácora de decisiones importantes con fecha. Cuando toméis una decisión de d
 - **[03/08] Una pulsación consume su toque, acierte o falle.** No hay segundos intentos sobre el mismo bote. Es lo que impide que machacar la tecla sea una estrategia válida.
 - **[03/08] La racha no arranca hasta el primer acierto.** Estando quieto no se acumulan mensajes de "se te ha escapado la pelota"; el jugador está calentando.
 
+- **[03/08] Curva de aceleración: smoothstep, 0.8s → 0.35s en 175 de combo.** Curva en S: plana al principio (no castiga al que empieza), acelera en el tramo medio y se aplana al llegar al techo (no hay golpe seco al topar con el límite). El cambio más agresivo es de ~4ms por acierto, imperceptible de uno en uno. Números en `SpeedConfig.luau`.
+- **[03/08] El ciclo se re-ancla en un instante absoluto acordado, nunca en "ahora".** Al cambiar de velocidad, el origen nuevo del ciclo se expresa como un instante concreto (el toque que se acaba de acertar, o una posición calculada hacia atrás al fallar). Así el retraso de red no produce ni saltos del balón ni desincronización.
+- **[03/08] Las ventanas de acierto se recortan solas si no caben en el ciclo.** No es un ajuste de dificultad, es geometría: en un ciclo de 0.35s no cabe una ventana de ±0.20s sin que dos botes seguidos se solapen. `MaxWindowFraction` (0.45) lo impide. Con el techo actual la Good pasa de ±0.20 a ±0.1575 solo a velocidad máxima.
+
 ## Pendientes de decidir
 
 - Fórmula de monedas y multiplicador. Ver [[Economía y monedas]].
-- Velocidad/curva de aceleración de la barra. Ver [[Mecánica de ritmo]].
+- Si la ventana de acierto debe encogerse con el combo como palanca de dificultad *deliberada* (aparte del recorte geométrico que ya existe). Ver [[Mecánica de ritmo]].
 
 <!-- Plantilla para nuevas entradas:
 - **[DD/MM] Título corto de la decisión.** Motivo breve. Detalle en [[nota]].

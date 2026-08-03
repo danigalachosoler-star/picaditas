@@ -34,6 +34,15 @@ function BallController:KnitStart()
 	local ComboService = Knit.GetService("ComboService")
 	self._rhythm = ComboService:GetRhythmState():expect()
 
+	-- El servidor cambia la velocidad al acertar y al fallar, y nos manda el
+	-- ritmo nuevo en el mismo mensaje del resultado. No hace falta un canal
+	-- aparte: los dos momentos coinciden siempre.
+	ComboService.PicaditaResult:Connect(function(payload)
+		if payload.rhythm then
+			self._rhythm = payload.rhythm
+		end
+	end)
+
 	-- PreRender (antes se llamaba RenderStepped) se dispara una vez por frame,
 	-- justo antes de dibujar. Es el sitio correcto para mover algo visual:
 	-- así el movimiento va suave sea cual sea los FPS del jugador.

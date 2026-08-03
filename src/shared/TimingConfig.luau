@@ -10,8 +10,19 @@ local TimingConfig = {}
 -- tienes 0.10s antes + 0.10s después = 0.20s de margen total para el Perfect.
 --
 -- Súbelas para que el juego perdone más, bájalas para que sea más exigente.
-TimingConfig.PerfectWindow = 0.10
-TimingConfig.GoodWindow = 0.20
+TimingConfig.PerfectWindow = 0.05
+TimingConfig.GoodWindow = 0.13
+
+-- TOPE DE SEGURIDAD, no es un ajuste de dificultad.
+-- Las ventanas de dos botes seguidos no pueden solaparse: si lo hicieran,
+-- cualquier tecleo caería siempre dentro de alguna y TODO sería acierto.
+-- Por eso ninguna ventana puede pasar de esta fracción del ciclo.
+--
+-- Solo entra en juego a mucha velocidad: con un ciclo de 0.8s no hace nada,
+-- pero con uno de 0.35s la GoodWindow se recorta sola de 0.20 a 0.1575.
+-- Si quieres que la ventana NUNCA se toque, sube MinCycleDuration por encima
+-- de GoodWindow / MaxWindowFraction (ahora 0.44s).
+TimingConfig.MaxWindowFraction = 0.45
 
 -- Segundos de cortesía al entrar en la partida, para que no te comas un fallo
 -- mientras el juego todavía está cargando en tu pantalla.
