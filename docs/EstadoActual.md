@@ -22,15 +22,17 @@ Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
   - El balón ya no lleva contador propio: se dibuja desde el reloj sincronizado del servidor.
 - **Paso 3: aceleración por combo.** `SpeedConfig` (curva) + re-anclaje del ciclo en el servidor. El ciclo va de 0.8s a 0.35s a lo largo de 175 de combo, con curva smoothstep. Al fallar vuelve a la velocidad base. HUD muestra el ciclo actual en Studio para afinar.
 
-- **Paso 4: monedas.** `EconomyConfig` + `CurrencyService`. Cada acierto paga según el tipo de golpe y el combo. Contador en el HUD y el "+N" cobrado junto al veredicto. ⚠️ Solo en memoria: al salir se pierde.
+- **Paso 4: monedas.** `EconomyConfig` + `CurrencyService`. Cada acierto paga según el tipo de golpe y el combo. Contador en el HUD y el "+N" cobrado junto al veredicto.
+- **Paso 5: persistencia.** `DataService` + `DataTemplate` con ProfileStore (Wally, realm server). Las monedas se guardan entre sesiones: carga al entrar, guardado periódico cada 5 min, y guardado al salir con cierre de sesión. Perfil diseñado para crecer (personajes, skills, rebirth, stats).
+
+### Cómo probar el guardado en local
+
+- **Studio tal cual:** ProfileStore detecta que no hay acceso a la API y usa un almacén FALSO en memoria. Todo funciona igual, pero el progreso se pierde al parar. El Output avisa de en qué modo estás.
+- **Guardado de verdad en Studio:** publica el place (puede ser privado) y activa *Game Settings → Security → Enable Studio Access to API Services*. A partir de ahí las monedas sobreviven entre sesiones de Studio.
 
 ## 🔜 Siguiente paso inmediato
 
-**Persistencia (DataStore):** guardar el saldo de monedas y el récord de combo. Todo el sitio donde tocar ya está aislado en `CurrencyService`. Ver [[Cliente vs Servidor]].
-
-## 🎯 Después de eso
-
-Animación de picadita del personaje y la capa 2 (barra de skill épica).
+Animación de picadita del personaje, o la capa 2 (barra de skill épica). El MVP está casi completo.
 
 ## Alcance del MVP (recordatorio)
 

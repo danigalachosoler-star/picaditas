@@ -35,6 +35,10 @@ Bitácora de decisiones importantes con fecha. Cuando toméis una decisión de d
 - **[03/08] `CurrencyService` aparte del `ComboService`.** El monedero vive en su propio Service porque es lo que se persistirá con DataStore, como pide CLAUDE.md. El ComboService le pide que pague; no lleva él las cuentas.
 - **[03/08] Fallar no quita monedas ya ganadas, solo el multiplicador.** Lo que se pierde es el sueldo futuro por golpe (de combo 100 a 0, el Perfect cae de 330 a 33).
 
+- **[03/08] Persistencia con ProfileStore (fork `ddashdev/profilestore@1.1.0`), no DataStore a mano.** Resuelve session-locking, reintentos, guardado periódico y guardado al cerrar el servidor. No hay ProfileStore oficial en Wally (loleris no publica ahí), así que se usa un fork **verificado a mano contra el original**: 98% de tokens idénticos y las únicas diferencias son anotaciones de tipos. Instalado como `[server-dependencies]` → no se replica al cliente.
+- **[03/08] `DataService` separado del `CurrencyService`.** El DataService custodia el perfil entero sin saber qué significa; el CurrencyService es el único que toca `Coins`. Cuando lleguen personajes/skills/rebirth pedirán su perfil al DataService en vez de pasar por el monedero.
+- **[03/08] Campos nuevos se añaden con `Profile:Reconcile()`.** Basta con añadirlos a `DataTemplate.luau`; los perfiles viejos los reciben al entrar, sin perder nada. Renombrar o reinterpretar un campo sí necesita migración manual: para eso está `Version` en la plantilla.
+
 ## Pendientes de decidir
 - Si la ventana de acierto debe encogerse con el combo como palanca de dificultad *deliberada* (aparte del recorte geométrico que ya existe). Ver [[Mecánica de ritmo]].
 

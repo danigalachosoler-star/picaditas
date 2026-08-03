@@ -6,3 +6,8 @@ realm = "shared"
 
 [dependencies]
 Knit = "sleitnick/knit@^1.7"
+
+# Realm "server": ProfileStore NO se replica al cliente. Es código de datos,
+# no tiene nada que hacer en la máquina del jugador. Va a ServerPackages/.
+[server-dependencies]
+ProfileStore = "ddashdev/profilestore@1.1.0"

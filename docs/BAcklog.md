@@ -11,7 +11,7 @@ Lo que hay que hacer e ideas pendientes. Para tareas del día a día con reparto
 - [ ] Barra de skill épica (capa 2): indicador oscilante que aparece cada X combo. Ver [[Mecánica de ritmo]].
 - [x] Monedas: sumar según golpe y combo. Ver [[Economía y monedas]].
 - [ ] 1 personaje básico con animación de picadita.
-- [ ] Guardado de datos del jugador (DataStore): monedas y récord.
+- [x] Guardado de datos del jugador (ProfileStore): monedas. El récord de combo tiene el campo listo pero aún no se escribe.
 - [x] Aceleración del balón según combo (curva smoothstep con techo).
 
 ## Fase 2 (después del MVP, NO ahora)

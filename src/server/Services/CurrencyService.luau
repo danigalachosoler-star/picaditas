@@ -1,12 +1,11 @@
 -- src/server/Services/CurrencyService.luau
--- Dueño del monedero de cada jugador. Servicio aparte del ComboService porque
--- en el paso 5 esto es lo que se guardará con DataStore, y CLAUDE.md pide que
--- los datos del jugador vivan en un Service dedicado.
+-- Dueño del monedero de cada jugador: la única pieza que decide cuánto vale
+-- una picadita y la única que toca el campo Coins del perfil.
 --
--- ⚠️ Este paso guarda el saldo SOLO EN MEMORIA: al salir de la partida se
--- pierde. La persistencia es el paso siguiente.
+-- El saldo YA NO vive aquí: vive en el perfil guardado que custodia el
+-- DataService. Este servicio lo lee y lo escribe, y ProfileStore se encarga
+-- de que llegue al DataStore.
 
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Knit = require(ReplicatedStorage.Packages.Knit)
@@ -23,32 +22,11 @@ local CurrencyService = Knit.CreateService({
 })
 
 function CurrencyService:KnitInit()
-	-- Saldo por jugador, igual que el combo: indexado por Player, listo para
-	-- muchos a la vez (ver VisionYFases.md).
-	self._balances = {} :: { [Player]: number }
+	self._dataService = nil
 end
 
 function CurrencyService:KnitStart()
-	for _, player in Players:GetPlayers() do
-		self:_getOrCreate(player)
-	end
-
-	Players.PlayerAdded:Connect(function(player)
-		self:_getOrCreate(player)
-	end)
-
-	Players.PlayerRemoving:Connect(function(player)
-		self._balances[player] = nil
-	end)
-end
-
-function CurrencyService:_getOrCreate(player: Player): number
-	local balance = self._balances[player]
-	if not balance then
-		balance = 0
-		self._balances[player] = balance
-	end
-	return balance
+	self._dataService = Knit.GetService("DataService")
 end
 
 -- HUECO PARA EL FUTURO: el Game Pass x2 de monedas (ver Monetizacion.md).
@@ -76,22 +54,37 @@ end
 
 -- Paga la picadita y devuelve (lo ganado, saldo nuevo).
 function CurrencyService:AwardPicadita(player: Player, judgement: string, combo: number): (number, number)
-	local earned = self:GetPicaditaReward(player, judgement, combo)
-	if earned <= 0 then
-		return 0, self:_getOrCreate(player)
+	local profile = self._dataService:GetProfile(player)
+	if not profile then
+		-- El perfil todavía no ha cargado (o ya se cerró). Preferimos no pagar
+		-- a inventar monedas que luego no se guardarían. En la práctica casi no
+		-- pasa: la carga termina durante los segundos de cortesía del inicio.
+		warn(`[CurrencyService] Picadita sin perfil cargado para {player.Name}; no se paga.`)
+		return 0, 0
 	end
 
-	local balance = self:_getOrCreate(player) + earned
-	self._balances[player] = balance
-	return earned, balance
+	local earned = self:GetPicaditaReward(player, judgement, combo)
+	if earned <= 0 then
+		return 0, profile.Data.Coins
+	end
+
+	-- Escribir en Profile.Data es TODO lo que hay que hacer para guardar:
+	-- ProfileStore se encarga del resto (guardado periódico y al cerrar).
+	profile.Data.Coins += earned
+	return earned, profile.Data.Coins
 end
 
 function CurrencyService:GetBalance(player: Player): number
-	return self:_getOrCreate(player)
+	local profile = self._dataService:GetProfile(player)
+	return if profile then profile.Data.Coins else 0
 end
 
+-- El cliente pide su saldo nada más entrar, cuando el perfil puede estar aún
+-- cargando. Aquí sí podemos esperar: es una llamada única y el jugador
+-- prefiere ver su saldo real medio segundo tarde que ver un 0 falso.
 function CurrencyService.Client:GetBalance(player: Player): number
-	return self.Server:GetBalance(player)
+	local profile = self.Server._dataService:WaitForProfile(player)
+	return if profile then profile.Data.Coins else 0
 end
 
 return CurrencyService
