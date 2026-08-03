@@ -9,7 +9,7 @@ Lo que hay que hacer e ideas pendientes. Para tareas del día a día con reparto
 - [x] Captura del input de espacio y detección de zona (verde/amarilla/roja).
 - [x] `ComboService`: validar golpe y llevar el combo en servidor. Ver [[Sistema de combos]].
 - [ ] Barra de skill épica (capa 2): indicador oscilante que aparece cada X combo. Ver [[Mecánica de ritmo]].
-- [ ] Monedas: sumar según golpe y combo. Ver [[Economía y monedas]].
+- [x] Monedas: sumar según golpe y combo. Ver [[Economía y monedas]].
 - [ ] 1 personaje básico con animación de picadita.
 - [ ] Guardado de datos del jugador (DataStore): monedas y récord.
 - [x] Aceleración del balón según combo (curva smoothstep con techo).

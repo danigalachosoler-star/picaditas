@@ -22,13 +22,15 @@ Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
   - El balón ya no lleva contador propio: se dibuja desde el reloj sincronizado del servidor.
 - **Paso 3: aceleración por combo.** `SpeedConfig` (curva) + re-anclaje del ciclo en el servidor. El ciclo va de 0.8s a 0.35s a lo largo de 175 de combo, con curva smoothstep. Al fallar vuelve a la velocidad base. HUD muestra el ciclo actual en Studio para afinar.
 
+- **Paso 4: monedas.** `EconomyConfig` + `CurrencyService`. Cada acierto paga según el tipo de golpe y el combo. Contador en el HUD y el "+N" cobrado junto al veredicto. ⚠️ Solo en memoria: al salir se pierde.
+
 ## 🔜 Siguiente paso inmediato
 
-**Monedas:** sumar según el tipo de golpe y el combo, con el combo como multiplicador. Servidor, encima del `ComboService` ya existente (tiene un `GetCombo(player)` para esto). Ver [[Economía y monedas]].
+**Persistencia (DataStore):** guardar el saldo de monedas y el récord de combo. Todo el sitio donde tocar ya está aislado en `CurrencyService`. Ver [[Cliente vs Servidor]].
 
 ## 🎯 Después de eso
 
-Animación de picadita del personaje, guardado con DataStore, y la capa 2 (barra de skill épica).
+Animación de picadita del personaje y la capa 2 (barra de skill épica).
 
 ## Alcance del MVP (recordatorio)
 

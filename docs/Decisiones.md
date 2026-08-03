@@ -31,9 +31,11 @@ Bitácora de decisiones importantes con fecha. Cuando toméis una decisión de d
 - **[03/08] El ciclo se re-ancla en un instante absoluto acordado, nunca en "ahora".** Al cambiar de velocidad, el origen nuevo del ciclo se expresa como un instante concreto (el toque que se acaba de acertar, o una posición calculada hacia atrás al fallar). Así el retraso de red no produce ni saltos del balón ni desincronización.
 - **[03/08] Las ventanas de acierto se recortan solas si no caben en el ciclo.** No es un ajuste de dificultad, es geometría: en un ciclo de 0.35s no cabe una ventana de ±0.20s sin que dos botes seguidos se solapen. `MaxWindowFraction` (0.45) lo impide. Con el techo actual la Good pasa de ±0.20 a ±0.1575 solo a velocidad máxima.
 
-## Pendientes de decidir
+- **[03/08] Monedas: `base × (1 + combo × 0.1) × multiplicadorJugador`.** Good = 10, Perfect = 30. Multiplicador lineal, sin tramos. El `multiplicadorJugador` es el hueco del Game Pass x2 y hoy vale 1. Ver [[Economía y monedas]].
+- **[03/08] `CurrencyService` aparte del `ComboService`.** El monedero vive en su propio Service porque es lo que se persistirá con DataStore, como pide CLAUDE.md. El ComboService le pide que pague; no lleva él las cuentas.
+- **[03/08] Fallar no quita monedas ya ganadas, solo el multiplicador.** Lo que se pierde es el sueldo futuro por golpe (de combo 100 a 0, el Perfect cae de 330 a 33).
 
-- Fórmula de monedas y multiplicador. Ver [[Economía y monedas]].
+## Pendientes de decidir
 - Si la ventana de acierto debe encogerse con el combo como palanca de dificultad *deliberada* (aparte del recorte geométrico que ya existe). Ver [[Mecánica de ritmo]].
 
 <!-- Plantilla para nuevas entradas:

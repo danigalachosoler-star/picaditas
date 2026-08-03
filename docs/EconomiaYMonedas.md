@@ -6,10 +6,19 @@ Cómo se ganan y gastan las monedas del juego. Esto es lo que hace que el jugado
 
 - Cada picadita da monedas. Un **Perfect** da más que un **Good**.
 - El **combo multiplica** las monedas (ver [[Sistema de combos]]): a más combo, más monedas por picadita.
-- Fórmula base a definir. Ejemplo de partida:
-  - Good = 1 moneda × multiplicador.
-  - Perfect = 3 monedas × multiplicador.
-  - Multiplicador = f(combo), p. ej. crece cada X combos.
+- **Fórmula implementada** (números en `src/shared/EconomyConfig.luau`):
+
+  ```
+  monedas = base × (1 + combo × ComboFactor) × multiplicadorDelJugador
+  ```
+
+  - `base`: Good = 10, Perfect = 30 (la proporción 1:3 de siempre, ×10 para que el redondeo a enteros no se coma el ajuste fino).
+  - `ComboFactor` = 0.1 → el multiplicador es una recta, sin tramos ni escalones. Con combo 175 vas a ×18.5.
+  - `multiplicadorDelJugador`: hoy siempre 1. Es el hueco para el Game Pass x2 (ver [[Monetización]]); se aplica ANTES de redondear.
+  - Suelo de 1 moneda: un acierto nunca paga 0.
+
+- **Perder el combo también baja el sueldo por golpe**, no solo el número: de combo 100 a combo 1 el Perfect cae de 330 a 33 monedas.
+- Una racha perfecta de 175 da ~51.400 monedas. Referencia para poner precios.
 
 ## En qué se gastan
 
@@ -28,6 +37,6 @@ El [[Progresión y retención|rebirth]] reinicia el progreso a cambio de un mult
 
 ## Pendiente
 
-- Definir fórmula exacta de monedas por golpe y multiplicador.
+- Balancear los números de la fórmula (la estructura ya está, faltan las pruebas de juego).
 - Lista de precios de personajes/skills/estadios.
 - Decidir si hay una segunda moneda premium (comprable con Robux) o solo Robux directo.

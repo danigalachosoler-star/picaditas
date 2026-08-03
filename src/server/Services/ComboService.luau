@@ -39,9 +39,14 @@ function ComboService:KnitInit()
 	-- Estado indexado POR JUGADOR. Aunque ahora solo juegue uno, esto ya
 	-- soporta muchos a la vez, cada uno con su balón y su ritmo propio.
 	self._states = {} :: { [Player]: PlayerState }
+	self._currencyService = nil
 end
 
 function ComboService:KnitStart()
+	-- En KnitStart ya es seguro pedir otros servicios: todos han pasado su
+	-- KnitInit (ver CicloDeVidaKnit.md).
+	self._currencyService = Knit.GetService("CurrencyService")
+
 	for _, player in Players:GetPlayers() do
 		self:_getOrCreateState(player)
 	end
@@ -178,10 +183,18 @@ function ComboService:_handleInput(player: Player, clientTime: any)
 	state.rallyActive = true
 	self:_reanchor(state, beatTime)
 
+	-- Pagamos con el combo YA subido: si el HUD te enseña combo 6, cobras lo
+	-- que vale el combo 6. Y como al fallar el combo vuelve a 0, el siguiente
+	-- acierto cobra otra vez la tarifa mínima: perder la racha no solo borra
+	-- el número, también te baja el sueldo por golpe.
+	local earned, balance = self._currencyService:AwardPicadita(player, judgement, state.combo)
+
 	self.Client.PicaditaResult:Fire(player, {
 		result = judgement,
 		combo = state.combo,
 		rhythm = self:_getRhythmPayload(state),
+		earned = earned,
+		coins = balance,
 	})
 end
 
@@ -221,11 +234,15 @@ function ComboService:_breakCombo(player: Player, state: PlayerState, reason: st
 	local newDuration = RhythmMath.GetCycleDuration(state.combo)
 	self:_reanchor(state, now - phase * newDuration)
 
+	-- El saldo NO se toca al fallar: las monedas ya ganadas son tuyas. Lo que
+	-- se pierde es el multiplicador, o sea lo que cobrarás de aquí en adelante.
 	self.Client.PicaditaResult:Fire(player, {
 		result = reason,
 		combo = 0,
 		lostCombo = lostCombo,
 		rhythm = self:_getRhythmPayload(state),
+		earned = 0,
+		coins = self._currencyService:GetBalance(player),
 	})
 end
 

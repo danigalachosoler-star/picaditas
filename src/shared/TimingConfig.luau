@@ -18,10 +18,10 @@ TimingConfig.GoodWindow = 0.13
 -- cualquier tecleo caería siempre dentro de alguna y TODO sería acierto.
 -- Por eso ninguna ventana puede pasar de esta fracción del ciclo.
 --
--- Solo entra en juego a mucha velocidad: con un ciclo de 0.8s no hace nada,
--- pero con uno de 0.35s la GoodWindow se recorta sola de 0.20 a 0.1575.
--- Si quieres que la ventana NUNCA se toque, sube MinCycleDuration por encima
--- de GoodWindow / MaxWindowFraction (ahora 0.44s).
+-- Con los valores actuales NO llega a activarse nunca: empezaría a recortar
+-- por debajo de un ciclo de GoodWindow / MaxWindowFraction = 0.29s, y el techo
+-- (MinCycleDuration) está en 0.35s. Queda como red de seguridad por si bajas
+-- el techo o subes las ventanas.
 TimingConfig.MaxWindowFraction = 0.45
 
 -- Segundos de cortesía al entrar en la partida, para que no te comas un fallo

@@ -1,7 +1,7 @@
 -- src/client/Controllers/ComboHudController.luau
--- La interfaz: enseña el combo y el resultado de cada picadita.
--- Solo PINTA lo que le manda el servidor. Nunca calcula el combo por su
--- cuenta, porque el combo bueno es el del servidor.
+-- La interfaz: enseña el combo, las monedas y el resultado de cada picadita.
+-- Solo PINTA lo que le manda el servidor. Nunca calcula el combo ni las
+-- monedas por su cuenta, porque los buenos son los del servidor.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -25,6 +25,7 @@ local ComboHudController = Knit.CreateController({
 function ComboHudController:KnitInit()
 	self._comboLabel = nil
 	self._feedbackLabel = nil
+	self._coinsLabel = nil
 	self._speedLabel = nil
 	-- Contador para que un mensaje viejo no borre a uno más nuevo al expirar.
 	self._messageToken = 0
@@ -34,6 +35,10 @@ function ComboHudController:KnitStart()
 	self:_build()
 
 	local ComboService = Knit.GetService("ComboService")
+	local CurrencyService = Knit.GetService("CurrencyService")
+
+	-- Saldo de partida. A partir de aquí llega dentro de cada resultado.
+	self:_showCoins(CurrencyService:GetBalance():expect())
 
 	-- Nos suscribimos al canal por el que el servidor empuja los veredictos.
 	-- Esto es el tramo servidor → cliente del viaje de ida y vuelta.
@@ -49,14 +54,28 @@ end
 function ComboHudController:_onResult(payload)
 	self._comboLabel.Text = if payload.combo > 0 then tostring(payload.combo) else ""
 
+	if payload.coins then
+		self:_showCoins(payload.coins)
+	end
+
 	local feedback = FEEDBACK[payload.result]
 	if feedback then
-		self:_showMessage(feedback.text, feedback.color)
+		-- Enseñamos lo cobrado pegado al veredicto. Así se ve de un vistazo que
+		-- tras un fallo el "+N" se desploma: perder el combo baja el sueldo.
+		local text = feedback.text
+		if payload.earned and payload.earned > 0 then
+			text ..= string.format("   +%d", payload.earned)
+		end
+		self:_showMessage(text, feedback.color)
 	end
 
 	if self._speedLabel and payload.rhythm then
 		self:_showSpeed(payload.rhythm.duration)
 	end
+end
+
+function ComboHudController:_showCoins(amount: number)
+	self._coinsLabel.Text = string.format("🪙 %d", amount)
 end
 
 function ComboHudController:_showSpeed(duration: number)
@@ -112,6 +131,20 @@ function ComboHudController:_build()
 	feedback.Text = ""
 	feedback.Parent = gui
 	self._feedbackLabel = feedback
+
+	local coins = Instance.new("TextLabel")
+	coins.Name = "Coins"
+	coins.BackgroundTransparency = 1
+	coins.Size = UDim2.fromScale(0.26, 0.055)
+	coins.Position = UDim2.fromScale(0.72, 0.03)
+	coins.Font = Enum.Font.GothamBold
+	coins.TextScaled = true
+	coins.TextXAlignment = Enum.TextXAlignment.Right
+	coins.TextColor3 = Color3.fromRGB(255, 214, 90)
+	coins.TextStrokeTransparency = 0.4
+	coins.Text = "🪙 0"
+	coins.Parent = gui
+	self._coinsLabel = coins
 
 	-- Lectura de la velocidad actual, solo en Studio: sirve para afinar la
 	-- curva de SpeedConfig viendo el número mientras juegas.
