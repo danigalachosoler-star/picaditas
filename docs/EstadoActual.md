@@ -2,7 +2,7 @@
 
 Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
 
-**Última actualización:** 31 de julio de 2026.
+**Última actualización:** 3 de agosto de 2026.
 
 ## ✅ Hecho
 
@@ -12,20 +12,22 @@ Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
 - Plugin de Rojo en Studio, conexión probada (se ven las carpetas en el Explorer).
 - Repo en GitHub: https://github.com/danigalachosoler-star/picaditas
 - Documentación: vault de Obsidian en `docs/` + `CLAUDE.md` en la raíz.
+- **"Hola mundo" de Knit verificado:** arranca en servidor y cliente (`TestService` + `TestController`).
+- **Paso 1 de la mecánica:** ciclo visual del balón (`BallController` + `BallConfig`).
+- **Paso 2 de la mecánica (capa 1 completa):** input, timing, validación en servidor y combo.
+  - `TimingConfig` + `RhythmMath` (Shared): ventanas de tolerancia y cuentas del ritmo, compartidas por ambos lados.
+  - `ComboService` (servidor): ancla el ciclo, juzga Perfect/Good/Miss, lleva el combo **por jugador** y detecta balones escapados.
+  - `InputController` (cliente): captura espacio vía ContextActionService (botón táctil en móvil incluido).
+  - `ComboHudController` (cliente): número de combo + mensajes de feedback.
+  - El balón ya no lleva contador propio: se dibuja desde el reloj sincronizado del servidor.
 
 ## 🔜 Siguiente paso inmediato
 
-Escribir el **"Hola mundo" de Knit** (4 archivos) para verificar que el framework arranca en ambos lados:
-1. `src/server/Services/TestService.luau`
-2. `src/server/init.server.luau` (arranque servidor)
-3. `src/client/Controllers/TestController.luau`
-4. `src/client/init.client.luau` (arranque cliente)
-
-Al darle a Play, deben salir 6 mensajes en el Output (Init de todos primero, Start después). Ver [[Ciclo de vida de Knit]].
+**Monedas:** sumar según el tipo de golpe y el combo, con el combo como multiplicador. Servidor, encima del `ComboService` ya existente (tiene un `GetCombo(player)` para esto). Ver [[Economía y monedas]].
 
 ## 🎯 Después de eso
 
-Empezar la [[Mecánica de ritmo]] (el core del juego). Arquitectura: `InputController` (cliente, la barra + input) ↔ `ComboService` (servidor, valida y guarda). Ver [[Cliente vs Servidor]].
+Aceleración del ciclo según el combo (el servidor cambia la duración y re-ancla el ciclo), animación de picadita del personaje, y guardado con DataStore.
 
 ## Alcance del MVP (recordatorio)
 

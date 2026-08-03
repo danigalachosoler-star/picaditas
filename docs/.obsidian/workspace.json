@@ -11,13 +11,32 @@
             "id": "4cf6e159ede8d241",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Vista gráfica"
+              "type": "markdown",
+              "state": {
+                "file": "Decisiones.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Decisiones"
+            }
+          },
+          {
+            "id": "e2e780a8bef5458f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "VisionYFases.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "VisionYFases"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -37,9 +56,7 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false,
-                "showSearch": false,
-                "searchQuery": ""
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "Explorador de archivos"
@@ -92,6 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "VisionYFases.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -101,7 +119,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Enlaces entrantes"
+              "title": "Enlaces entrantes de VisionYFases"
             }
           },
           {
@@ -110,11 +128,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "VisionYFases.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Enlaces salientes"
+              "title": "Enlaces salientes de VisionYFases"
             }
           },
           {
@@ -152,12 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "VisionYFases.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Esquema"
+              "title": "Esquema de VisionYFases"
             }
           }
         ]
@@ -178,14 +198,14 @@
       "bases:Crear nueva base": false
     }
   },
-  "active": "4cf6e159ede8d241",
+  "active": "e2e780a8bef5458f",
   "lastOpenFiles": [
-    "IDsDeAnimaciones.md",
-    "IDs de Animaciones.md",
-    "Monetizacion.md",
-    "ProgresionYRetencion.md",
-    "ConvencionesRojo.md",
     "Decisiones.md",
+    "VisionYFases.md",
+    "ConvencionesRojo.md",
+    "SistemaCombos.md",
+    "IDsDeAnimaciones.md",
+    "ProgresionYRetencion.md",
     "BAcklog.md",
     "ClienteYServidor.md",
     "README.md",
