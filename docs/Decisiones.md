@@ -51,6 +51,10 @@ Bitácora de decisiones importantes con fecha. Cuando toméis una decisión de d
 - **[04/08] `CurrencyService:TrySpend` comprueba y resta en la misma función.** Si el que llama mirase el saldo por su cuenta y restara después, entre las dos cosas podría colarse otra operación. Ninguna de las dos funciones cede el hilo, así que la compra entera es atómica.
 - **[04/08] Los métodos de debug no existen fuera de Studio.** `DebugAddCoins` se define dentro de un `if RunService:IsStudio()`, así que en producción Knit ni siquiera le crea remote: no hay nada que un cliente modificado pueda llamar.
 
+- **[04/08] La tienda no decide nada, solo pinta.** No comprueba si puedes permitirte algo para bloquear el botón: manda la petición y enseña el `message` que devuelva el servidor. Tras cada acción recarga el estado desde el servidor, incluso al fallar, para que lo que se ve sea siempre lo que el servidor cree.
+- **[04/08] El botón "Comprar" sigue pulsable aunque no llegue el dinero** (solo se atenúa). Si se desactivara, pulsarlo no haría nada y el jugador no sabría cuánto le falta.
+- **[04/08] Estética provisional a propósito.** Colores planos y layout simple; el estilo definitivo llegará con la identidad visual del juego. Cada fila ya lleva un `ImageLabel` vacío colocado: poner el arte será darle `Image`, sin tocar el layout.
+
 ## Pendientes de decidir
 - Si la ventana de acierto debe encogerse con el combo como palanca de dificultad *deliberada* (aparte del recorte geométrico que ya existe). Ver [[Mecánica de ritmo]].
 

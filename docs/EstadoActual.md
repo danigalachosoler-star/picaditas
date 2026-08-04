@@ -32,13 +32,15 @@ Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
 
 - **Paso 6a: cimientos de tienda/inventario.** `Catalog` (categorías + items) e `InventoryService` (solo lectura). El perfil guarda qué tiene desbloqueado y qué lleva equipado por categoría. El bonus de monedas de las mascotas ya está enchufado al multiplicador. Sin UI ni compra todavía.
 
-- **Paso 6b: comprar y equipar.** `InventoryService:Purchase` / `:Equip`, validados en servidor y expuestos al cliente por Knit. `CurrencyService:TrySpend` cobra de forma atómica. Panel de pruebas en Studio (`DebugShopController`, tecla **F2**) para comprar/equipar sin UI real.
+- **Paso 6b: comprar y equipar.** `InventoryService:Purchase` / `:Equip`, validados en servidor y expuestos al cliente por Knit. `CurrencyService:TrySpend` cobra de forma atómica.
+
+- **Paso 6c: UI de la tienda.** `ShopController`: botón 🛒 arriba a la izquierda, pestañas generadas desde `Catalog.Categories`, y por item nombre / precio / bonus / hueco de imagen y un botón que cambia según el estado (Comprar · Equipar · EQUIPADO). Se refresca sola tras cada acción y enseña el `message` del servidor. Retirado el panel de debug del 6b.
 
 ## 🔜 Siguiente paso inmediato
 
-**Paso 6c: la UI de la tienda.** Los métodos que tiene que llamar ya existen y están probados; falta pintarla. Referencia de cómo se llaman: `DebugShopController`.
+**Que la skin de pelota equipada se vea de verdad.** El `color` está en el catálogo y el item se puede equipar, pero el `BallController` todavía no lo lee.
 
-Pendiente también: que la skin de pelota equipada se vea de verdad (el `color` está en el catálogo pero no está enchufado al `BallController`).
+Después: imágenes de los items (el `ImageLabel` ya está colocado en cada fila, solo falta darle `Image`), animación de picadita del personaje, y la capa 2 (barra de skill épica).
 
 ## Alcance del MVP (recordatorio)
 

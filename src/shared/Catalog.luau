@@ -33,7 +33,8 @@ export type Item = {
 -- De cada categoría se puede llevar UNA cosa equipada a la vez.
 Catalog.Categories = {
 	{ id = "pet", name = "Mascotas" },
-	{ id = "ballskin", name = "Skins de pelota" },
+	-- `name` es lo que se lee en la pestaña de la tienda: que sea corto.
+	{ id = "ballskin", name = "Pelotas" },
 } :: { Category }
 
 -- Precios de referencia: una racha perfecta de 175 da ~51.000 monedas
