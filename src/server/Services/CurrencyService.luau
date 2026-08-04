@@ -7,6 +7,7 @@
 -- de que llegue al DataStore.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Knit = require(ReplicatedStorage.Packages.Knit)
 local Catalog = require(ReplicatedStorage.Shared.Catalog)
@@ -19,7 +20,12 @@ local REWARDS = {
 
 local CurrencyService = Knit.CreateService({
 	Name = "CurrencyService",
-	Client = {},
+	Client = {
+		-- Avisa al cliente de un cambio de saldo que NO viene de una picadita
+		-- (hoy: una compra). Las picaditas ya mandan el saldo dentro de su
+		-- propio resultado, así que no se duplica un mensaje por golpe.
+		BalanceChanged = Knit.CreateSignal(),
+	},
 })
 
 function CurrencyService:KnitInit()
@@ -92,12 +98,53 @@ function CurrencyService:GetBalance(player: Player): number
 	return if profile then profile.Data.Coins else 0
 end
 
+-- Cobra `amount` monedas. Devuelve false y no toca nada si no llega el saldo.
+--
+-- Comprobar y restar van juntos EN LA MISMA FUNCIÓN a propósito: si el que
+-- llama mirase el saldo por su cuenta y restara después, entre las dos cosas
+-- podría colarse otra operación y dejar el saldo en negativo. Aquí no puede
+-- pasar porque esta función no cede el hilo en ningún punto.
+function CurrencyService:TrySpend(player: Player, amount: number): boolean
+	if type(amount) ~= "number" or amount ~= amount or amount < 0 then
+		warn(`[CurrencyService] TrySpend con un importe inválido: {tostring(amount)}`)
+		return false
+	end
+
+	local profile = self._dataService:GetProfile(player)
+	if not profile or profile.Data.Coins < amount then
+		return false
+	end
+
+	profile.Data.Coins -= amount
+	self.Client.BalanceChanged:Fire(player, profile.Data.Coins)
+	return true
+end
+
 -- El cliente pide su saldo nada más entrar, cuando el perfil puede estar aún
 -- cargando. Aquí sí podemos esperar: es una llamada única y el jugador
 -- prefiere ver su saldo real medio segundo tarde que ver un 0 falso.
 function CurrencyService.Client:GetBalance(player: Player): number
 	local profile = self.Server._dataService:WaitForProfile(player)
 	return if profile then profile.Data.Coins else 0
+end
+
+-- ⚠️ REGALA MONEDAS. Solo para probar la tienda sin farmear 75.000.
+--
+-- Fíjate en que el método se define DENTRO del if: fuera de Studio no llega a
+-- existir, así que Knit no le crea remote y no hay nada que un cliente
+-- modificado pueda llamar. Es más seguro que comprobar IsStudio por dentro.
+if RunService:IsStudio() then
+	function CurrencyService.Client:DebugAddCoins(player: Player, amount: number)
+		local profile = self.Server._dataService:GetProfile(player)
+		if not profile then
+			return 0
+		end
+
+		local safeAmount = if type(amount) == "number" and amount == amount then math.floor(amount) else 0
+		profile.Data.Coins = math.max(0, profile.Data.Coins + safeAmount)
+		self.BalanceChanged:Fire(player, profile.Data.Coins)
+		return profile.Data.Coins
+	end
 end
 
 return CurrencyService

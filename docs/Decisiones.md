@@ -46,6 +46,11 @@ Bitácora de decisiones importantes con fecha. Cuando toméis una decisión de d
 - **[04/08] El bonus de mascota se resuelve con `Catalog.GetCoinBonus(Equipped)`, función pura.** El CurrencyService la llama sin depender del InventoryService, para que en el 6b el inventario pueda cobrar compras a través del monedero sin dependencia circular.
 - **[04/08] Retirado el campo `Unlocked` de la plantilla del paso 5.** Era un placeholder especulativo; lo sustituye `Inventory`, que sí viene del catálogo. Los perfiles de prueba que ya existan conservarán un `Unlocked` vestigial sin usar (Reconcile no borra campos).
 
+- **[04/08] Comprar y equipar devuelven `{ok, reason, message}`.** `reason` es un código para el programa (`NotEnoughCoins`, `AlreadyOwned`, `NotOwned`, `UnknownItem`, `ProfileNotReady`) y `message` el texto en castellano para enseñar tal cual. La UI del 6c puede usar cualquiera de los dos.
+- **[04/08] Comprar NO equipa automáticamente.** Son dos acciones separadas, como las pidió el diseño. Equipar algo que ya llevas puesto no es un error, simplemente no cambia nada.
+- **[04/08] `CurrencyService:TrySpend` comprueba y resta en la misma función.** Si el que llama mirase el saldo por su cuenta y restara después, entre las dos cosas podría colarse otra operación. Ninguna de las dos funciones cede el hilo, así que la compra entera es atómica.
+- **[04/08] Los métodos de debug no existen fuera de Studio.** `DebugAddCoins` se define dentro de un `if RunService:IsStudio()`, así que en producción Knit ni siquiera le crea remote: no hay nada que un cliente modificado pueda llamar.
+
 ## Pendientes de decidir
 - Si la ventana de acierto debe encogerse con el combo como palanca de dificultad *deliberada* (aparte del recorte geométrico que ya existe). Ver [[Mecánica de ritmo]].
 

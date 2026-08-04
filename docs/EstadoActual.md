@@ -32,9 +32,13 @@ Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
 
 - **Paso 6a: cimientos de tienda/inventario.** `Catalog` (categorías + items) e `InventoryService` (solo lectura). El perfil guarda qué tiene desbloqueado y qué lleva equipado por categoría. El bonus de monedas de las mascotas ya está enchufado al multiplicador. Sin UI ni compra todavía.
 
+- **Paso 6b: comprar y equipar.** `InventoryService:Purchase` / `:Equip`, validados en servidor y expuestos al cliente por Knit. `CurrencyService:TrySpend` cobra de forma atómica. Panel de pruebas en Studio (`DebugShopController`, tecla **F2**) para comprar/equipar sin UI real.
+
 ## 🔜 Siguiente paso inmediato
 
-**Paso 6b:** comprar y equipar (con validación en servidor: que tenga monedas, que no lo tenga ya, que el item exista) + la UI de la tienda.
+**Paso 6c: la UI de la tienda.** Los métodos que tiene que llamar ya existen y están probados; falta pintarla. Referencia de cómo se llaman: `DebugShopController`.
+
+Pendiente también: que la skin de pelota equipada se vea de verdad (el `color` está en el catálogo pero no está enchufado al `BallController`).
 
 ## Alcance del MVP (recordatorio)
 

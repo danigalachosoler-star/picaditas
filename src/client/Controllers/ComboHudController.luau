@@ -40,6 +40,12 @@ function ComboHudController:KnitStart()
 	-- Saldo de partida. A partir de aquí llega dentro de cada resultado.
 	self:_showCoins(CurrencyService:GetBalance():expect())
 
+	-- Cambios de saldo que no vienen de una picadita (una compra). Sin esto el
+	-- contador se quedaría con el número viejo hasta el siguiente golpe.
+	CurrencyService.BalanceChanged:Connect(function(balance)
+		self:_showCoins(balance)
+	end)
+
 	-- Nos suscribimos al canal por el que el servidor empuja los veredictos.
 	-- Esto es el tramo servidor → cliente del viaje de ida y vuelta.
 	ComboService.PicaditaResult:Connect(function(payload)
