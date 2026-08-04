@@ -9,6 +9,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Knit = require(ReplicatedStorage.Packages.Knit)
+local Catalog = require(ReplicatedStorage.Shared.Catalog)
 local EconomyConfig = require(ReplicatedStorage.Shared.EconomyConfig)
 
 local REWARDS = {
@@ -29,12 +30,24 @@ function CurrencyService:KnitStart()
 	self._dataService = Knit.GetService("DataService")
 end
 
--- HUECO PARA EL FUTURO: el Game Pass x2 de monedas (ver Monetizacion.md).
--- Hoy devuelve 1 siempre, así que no cambia nada. Cuando toque implementarlo,
--- este es el único sitio que hay que tocar: consultar el Game Pass del jugador
--- y devolver 2. La fórmula de abajo ya lo multiplica.
-function CurrencyService:GetMultiplier(_player: Player): number
-	return 1
+-- Multiplicador total del jugador. Aquí se acumula todo lo que le haga ganar
+-- más monedas, aparte del combo.
+function CurrencyService:GetMultiplier(player: Player): number
+	local multiplier = 1
+
+	-- Bonus de lo que lleve equipado (hoy: mascotas). Se lee del perfil y se
+	-- resuelve con el catálogo, sin pasar por el InventoryService: así los dos
+	-- servicios no dependen el uno del otro cuando en el 6b el inventario
+	-- necesite cobrar compras a través de este.
+	local profile = self._dataService:GetProfile(player)
+	if profile then
+		multiplier += Catalog.GetCoinBonus(profile.Data.Equipped)
+	end
+
+	-- HUECO PARA EL FUTURO: el Game Pass x2 de monedas (ver Monetizacion.md).
+	-- Cuando toque, aquí se consulta el Game Pass y se multiplica por 2.
+
+	return multiplier
 end
 
 -- Cuánto vale una picadita. Función aparte para poder razonar sobre ella (y

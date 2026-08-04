@@ -13,6 +13,8 @@
 --   · Nada de tablas con huecos numéricos, ni mezclar índices numéricos y de texto.
 --   · Solo números, textos, booleanos y tablas de esos.
 
+local Catalog = require(script.Parent.Catalog)
+
 local DataTemplate = {
 	-- Sube esto solo si algún día hay que hacer una migración destructiva
 	-- (renombrar o reinterpretar un campo). Para añadir campos NO hace falta:
@@ -33,15 +35,14 @@ local DataTemplate = {
 	-- Rebirths hechos y el multiplicador permanente que dan.
 	Rebirths = 0,
 
-	-- Colecciones desbloqueadas. Tablas indexadas por id: { ["balon_oro"] = true }.
+	-- ---- Inventario (se rellena abajo desde el catálogo) ----
+	-- Inventory[categoría][idDelItem] = true  → lo que tiene desbloqueado.
+	-- Equipped[categoría] = idDelItem         → lo que lleva puesto.
+	--
 	-- Se usan claves de texto en vez de listas numeradas a propósito: así
 	-- comprobar si algo está desbloqueado es directo y no se corrompe el orden.
-	Unlocked = {
-		Characters = {},
-		Skills = {},
-		Balls = {},
-		Stadiums = {},
-	},
+	Inventory = {},
+	Equipped = {},
 
 	-- Contadores acumulados, para misiones y estadísticas.
 	Stats = {
@@ -49,5 +50,17 @@ local DataTemplate = {
 		TotalPerfects = 0,
 	},
 }
+
+-- Los huecos del inventario salen del catálogo, no están escritos a mano. Al
+-- añadir una categoría nueva en Catalog.luau, aparece aquí sola, y Reconcile
+-- se la da a los jugadores que ya existían sin que pierdan nada.
+for _, category in Catalog.Categories do
+	DataTemplate.Inventory[category.id] = {}
+
+	-- Cadena vacía = no lleva nada equipado. NO se usa nil a propósito: el
+	-- DataStore descarta los nil, así que un campo a nil desaparecería del
+	-- guardado y Reconcile tendría que recrearlo en cada carga.
+	DataTemplate.Equipped[category.id] = ""
+end
 
 return DataTemplate

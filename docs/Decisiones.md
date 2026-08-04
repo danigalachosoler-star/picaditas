@@ -39,6 +39,13 @@ Bitácora de decisiones importantes con fecha. Cuando toméis una decisión de d
 - **[03/08] `DataService` separado del `CurrencyService`.** El DataService custodia el perfil entero sin saber qué significa; el CurrencyService es el único que toca `Coins`. Cuando lleguen personajes/skills/rebirth pedirán su perfil al DataService en vez de pasar por el monedero.
 - **[03/08] Campos nuevos se añaden con `Profile:Reconcile()`.** Basta con añadirlos a `DataTemplate.luau`; los perfiles viejos los reciben al entrar, sin perder nada. Renombrar o reinterpretar un campo sí necesita migración manual: para eso está `Version` en la plantilla.
 
+## Agosto 2026 (cont.)
+
+- **[04/08] El catálogo dirige la estructura del perfil.** `Catalog.luau` define categorías e items; `DataTemplate` genera desde ahí los huecos de `Inventory` y `Equipped`. Añadir una categoría nueva (personajes, estadios...) es editar el catálogo: el perfil crece solo y Reconcile se lo da a los jugadores existentes. Cero código que tocar.
+- **[04/08] "Nada equipado" se guarda como `""`, no como `nil`.** El DataStore descarta los nil, así que un campo a nil desaparecería del guardado y habría que recrearlo en cada carga.
+- **[04/08] El bonus de mascota se resuelve con `Catalog.GetCoinBonus(Equipped)`, función pura.** El CurrencyService la llama sin depender del InventoryService, para que en el 6b el inventario pueda cobrar compras a través del monedero sin dependencia circular.
+- **[04/08] Retirado el campo `Unlocked` de la plantilla del paso 5.** Era un placeholder especulativo; lo sustituye `Inventory`, que sí viene del catálogo. Los perfiles de prueba que ya existan conservarán un `Unlocked` vestigial sin usar (Reconcile no borra campos).
+
 ## Pendientes de decidir
 - Si la ventana de acierto debe encogerse con el combo como palanca de dificultad *deliberada* (aparte del recorte geométrico que ya existe). Ver [[Mecánica de ritmo]].
 

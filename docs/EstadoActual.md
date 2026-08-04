@@ -30,9 +30,11 @@ Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
 - **Studio tal cual:** ProfileStore detecta que no hay acceso a la API y usa un almacén FALSO en memoria. Todo funciona igual, pero el progreso se pierde al parar. El Output avisa de en qué modo estás.
 - **Guardado de verdad en Studio:** publica el place (puede ser privado) y activa *Game Settings → Security → Enable Studio Access to API Services*. A partir de ahí las monedas sobreviven entre sesiones de Studio.
 
+- **Paso 6a: cimientos de tienda/inventario.** `Catalog` (categorías + items) e `InventoryService` (solo lectura). El perfil guarda qué tiene desbloqueado y qué lleva equipado por categoría. El bonus de monedas de las mascotas ya está enchufado al multiplicador. Sin UI ni compra todavía.
+
 ## 🔜 Siguiente paso inmediato
 
-Animación de picadita del personaje, o la capa 2 (barra de skill épica). El MVP está casi completo.
+**Paso 6b:** comprar y equipar (con validación en servidor: que tenga monedas, que no lo tenga ya, que el item exista) + la UI de la tienda.
 
 ## Alcance del MVP (recordatorio)
 
