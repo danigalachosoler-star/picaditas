@@ -21,6 +21,13 @@ EconomyConfig.PerfectReward = 30
 --   0.20 → con combo 175 vas a ×36    (premia muchísimo las rachas largas)
 EconomyConfig.ComboFactor = 0.1
 
+-- Premio base por clavar una skill épica (ver SkillConfig.luau). Se multiplica
+-- por el combo con la MISMA fórmula que una picadita, así que a combos altos
+-- es la lluvia de monedas del momento.
+--   Con combo 13  → 1500 × 2.3  ≈ 3.450 monedas (unas 50 picaditas de golpe).
+--   Con combo 170 → 1500 × 18   ≈ 27.000 monedas.
+EconomyConfig.SkillReward = 1500
+
 -- Suelo: un acierto nunca da 0 monedas, por feo que salga el redondeo.
 EconomyConfig.MinReward = 1
 

@@ -36,11 +36,19 @@ Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
 
 - **Paso 6c: UI de la tienda.** `ShopController`: botón 🛒 arriba a la izquierda, pestañas generadas desde `Catalog.Categories`, y por item nombre / precio / bonus / hueco de imagen y un botón que cambia según el estado (Comprar · Equipar · EQUIPADO). Se refresca sola tras cada acción y enseña el `message` del servidor. Retirado el panel de debug del 6b.
 
+- **Paso 7: skills épicas (capa 2).** `SkillConfig` + `SkillMath` + `SkillController`. Cada cierto combo (5, 13, 24, 39, 59, 86...) aparece una barra con una zona sorteada; pararla dentro da un premio ~50x, fallarla cuesta el combo. Durante la skill el ritmo se pausa y al terminar se re-ancla. El efecto épico es un placeholder marcado en el código.
+
+- **Animaciones del personaje.** `AnimationConfig` + `CharacterAnimationController`. Al acertar una picadita se reproduce toque normal (80%) o de rodilla (20%), acelerada con el mismo factor que el balón. Al clavar una skill, la vuelta al mundo a velocidad normal. El contacto pie-balón se detecta con el marker `Contacto`. Ver [[IDs de animaciones]].
+
 ## 🔜 Siguiente paso inmediato
 
-**Que la skin de pelota equipada se vea de verdad.** El `color` está en el catálogo y el item se puede equipar, pero el `BallController` todavía no lo lee.
+**Comprobar que las animaciones cargan de verdad** — Roblox solo permite las que pertenezcan a la cuenta o grupo dueño del juego, y estas son de Costa Studios. Si fallan, hay que republicarlas desde la cuenta del juego.
 
-Después: imágenes de los items (el `ImageLabel` ya está colocado en cada fila, solo falta darle `Image`), animación de picadita del personaje, y la capa 2 (barra de skill épica).
+Después, el resto del espectáculo: partículas, sonido y cámara. Los dos puntos de conexión están marcados en el código (`SkillController:_playEpicPlaceholder` y `CharacterAnimationController:_onContact`).
+
+Pendientes menores:
+- Que la skin de pelota equipada se vea (el `color` está en el catálogo, el `BallController` no lo lee).
+- Imágenes de los items (el `ImageLabel` ya está en cada fila, falta darle `Image`).
 
 ## Alcance del MVP (recordatorio)
 

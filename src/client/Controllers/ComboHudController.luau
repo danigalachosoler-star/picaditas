@@ -52,6 +52,18 @@ function ComboHudController:KnitStart()
 		self:_onResult(payload)
 	end)
 
+	-- Una skill también mueve el combo y las monedas. El mensaje de la propia
+	-- skill lo pinta el SkillController; aquí solo se actualizan los números.
+	ComboService.SkillResult:Connect(function(payload)
+		self._comboLabel.Text = if payload.combo > 0 then tostring(payload.combo) else ""
+		if payload.coins then
+			self:_showCoins(payload.coins)
+		end
+		if self._speedLabel and payload.rhythm then
+			self:_showSpeed(payload.rhythm.duration)
+		end
+	end)
+
 	if self._speedLabel then
 		self:_showSpeed(ComboService:GetRhythmState():expect().duration)
 	end

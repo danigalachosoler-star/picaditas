@@ -55,6 +55,25 @@ Bitácora de decisiones importantes con fecha. Cuando toméis una decisión de d
 - **[04/08] El botón "Comprar" sigue pulsable aunque no llegue el dinero** (solo se atenúa). Si se desactivara, pulsarlo no haría nada y el jugador no sabría cuánto le falta.
 - **[04/08] Estética provisional a propósito.** Colores planos y layout simple; el estilo definitivo llegará con la identidad visual del juego. Cada fila ya lleva un `ImageLabel` vacío colocado: poner el arte será darle `Image`, sin tocar el layout.
 
+- **[04/08] La skill es un vaivén LIMITADO: dos pasadas y fuera.** Un vaivén infinito no tendría riesgo (bastaría esperar a que la zona pase por delante); una sola pasada no aprovecha el susto del cambio de dirección. Con el rebote acotado (`SkillConfig.Sweeps = 2`) hay dos oportunidades y límite de tiempo natural.
+- **[04/08] La zona verde se sortea en el servidor cada vez.** Si estuviera siempre en el centro se memorizaría; si la eligiera el cliente, sabría dónde va a caer antes de tiempo.
+- **[04/08] Un solo canal de input para las dos capas.** El cliente manda siempre "he pulsado en el instante T" y el SERVIDOR decide si eso es una picadita o un intento de parar la barra, porque él sabe si hay una skill activa. El cliente no enruta nada y no puede mandar el tipo equivocado.
+- **[04/08] Al salir de una skill el ciclo se re-ancla en "ahora".** El balón reaparece abajo y da un ciclo entero de margen. Sin esto el jugador se comería un fallo nada más terminar la skill, porque el reloj del ritmo habría seguido corriendo por dentro.
+- **[04/08] Los umbrales de skill se reinician al perder el combo.** Cada racha nueva vuelve a recibirlas desde el combo 5.
+
+## Agosto 2026 (cont. 2)
+
+- **[05/08] El balón va anclado al personaje, no a una coordenada del mundo.** Su punto de contacto se recalcula cada frame desde el `HumanoidRootPart` con `PointToWorldSpace`, así que le sigue si anda y gira con él. Va en la dirección de las parcelas de la fase 3 (ver [[Visión y fases]]).
+- **[05/08] El toque se PROGRAMA para el próximo bote, no se reproduce al recibir el aviso del servidor.** El aviso llega después del bote (ida y vuelta de red) y el contacto de la animación cae aún más tarde, así que reaccionar siempre llegaría tarde: con 100ms de ping el pie tocaba el balón cuando ya iba por el 40-72% de la subida. Programándolo contra el reloj compartido, el contacto cae exactamente en la fase 0.
+- **[05/08] El desfase del marker se aprende solo, no se configura.** La primera reproducción mide `AnimationTrack.TimePosition` cuando salta el marker y lo cachea. Evita tener que medir a mano un número en el editor y mantenerlo sincronizado si cambia la animación.
+- **[05/08] Precio asumido: el personaje da un toque al aire si se rompe la racha.** La animación del próximo bote ya está programada cuando llega el fallo. Se acepta a cambio de que el 99% de los toques cuadren.
+
+- **[06/08] Concepto de "trayectoria de skill" (`SkillTrajectories.luau`).** Al clavar una skill el balón deja su ciclo y sigue una coreografía escrita a mano. Regla de oro: toda trayectoria empieza y acaba en el punto de contacto del pie, que es donde el ciclo normal tiene su fase 0 — así entrar y salir de ella es invisible. Hoy solo existe la vuelta al mundo; añadir otra es una entrada más en la tabla.
+- **[06/08] Al clavar una skill, el ritmo se ancla al FINAL de la coreografía, no al momento de resolverla.** Arreglaba un bug real, no solo el desajuste visual: con el anclaje anterior el siguiente bote caía a 0.35-0.8s y su ventana se cerraba antes de que acabase la animación de 1s, así que **se perdía el combo mientras veías la celebración**, sin poder hacer nada. Pasaba en todos los rangos de combo.
+- **[06/08] La animación de celebración se adelanta con `TimePosition` al arrancar.** El aviso del servidor llega con el retraso de red, así que la pista se salta esos milisegundos para caer alineada con la coreografía del balón en vez de ir por detrás.
+- **[06/08] El bote en el que aterriza una coreografía SÍ es golpeable.** `_reanchor` marca por defecto el bote del anclaje como ya consumido, que es lo correcto cuando anclamos en un bote recién golpeado. Pero al salir de una skill el balón llega al pie sin que nadie lo haya tocado: el jugador lo ve abajo, pulsa, y se lo contaban como fallo. Ahora ese caso pasa `resolvedBeat = -1`.
+- **[06/08] La vuelta al mundo NO es una chilena.** Es un truco de freestyle a ras de suelo: se pasa la pierna por encima del balón mientras se sigue haciendo picaditas. El balón se queda bajo, cerca del pie — misma parábola que una picadita normal, un 15% más alta y con más tiempo en el aire. Apuntado aquí porque la primera implementación se hizo con la suposición equivocada (balón disparado a 9.5 studs y golpeado por encima de la cabeza).
+
 ## Pendientes de decidir
 - Si la ventana de acierto debe encogerse con el combo como palanca de dificultad *deliberada* (aparte del recorte geométrico que ya existe). Ver [[Mecánica de ritmo]].
 

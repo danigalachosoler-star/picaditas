@@ -93,6 +93,22 @@ function CurrencyService:AwardPicadita(player: Player, judgement: string, combo:
 	return earned, profile.Data.Coins
 end
 
+-- Paga una skill épica clavada. Usa la misma curva de combo y el mismo
+-- multiplicador del jugador que una picadita: solo cambia la base, que es
+-- mucho más gorda.
+function CurrencyService:AwardSkill(player: Player, combo: number): (number, number)
+	local profile = self._dataService:GetProfile(player)
+	if not profile then
+		return 0, 0
+	end
+
+	local amount = EconomyConfig.SkillReward * (1 + combo * EconomyConfig.ComboFactor) * self:GetMultiplier(player)
+	local earned = math.max(EconomyConfig.MinReward, math.floor(amount))
+
+	profile.Data.Coins += earned
+	return earned, profile.Data.Coins
+end
+
 function CurrencyService:GetBalance(player: Player): number
 	local profile = self._dataService:GetProfile(player)
 	return if profile then profile.Data.Coins else 0
