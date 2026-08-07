@@ -3,3 +3,5 @@ Animación Toque de rodilla:[129821051355554] 0,.3 segundos
 Animación Vuelta al mundo:[122240671057322] 1 segundos
 Toque hombro:[72573417648068] 0.6 segundos
 Toque izquierda:[107163255734557] 0.3 segundos
+Toque pecho:[107771013915403] 0.7 segundos 
+Toque de talon:[120851398500898] 0.6 segundos
