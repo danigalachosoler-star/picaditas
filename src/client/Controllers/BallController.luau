@@ -12,6 +12,7 @@ local Workspace = game:GetService("Workspace")
 
 local Knit = require(ReplicatedStorage.Packages.Knit)
 local BallConfig = require(ReplicatedStorage.Shared.BallConfig)
+local Catalog = require(ReplicatedStorage.Shared.Catalog)
 local RhythmMath = require(ReplicatedStorage.Shared.RhythmMath)
 local SkillTrajectories = require(ReplicatedStorage.Shared.SkillTrajectories)
 
@@ -67,12 +68,38 @@ function BallController:KnitStart()
 		self:_beginTrajectory(payload)
 	end)
 
+	self:_watchSkin()
+
 	-- PreRender (antes se llamaba RenderStepped) se dispara una vez por frame,
 	-- justo antes de dibujar. Es el sitio correcto para mover algo visual:
 	-- así el movimiento va suave sea cual sea los FPS del jugador.
 	self._connection = RunService.PreRender:Connect(function()
 		self:_update()
 	end)
+end
+
+-- Pinta el balón con la skin equipada y se queda escuchando por si cambia.
+function BallController:_watchSkin()
+	local InventoryService = Knit.GetService("InventoryService")
+
+	-- Al equipar en la tienda, el servidor manda lo que llevas puesto y el
+	-- balón cambia de color al momento, sin recargar nada.
+	InventoryService.EquippedChanged:Connect(function(equipped)
+		self:_applySkin(equipped)
+	end)
+
+	-- El color de arranque va en su propio hilo porque pedirlo espera a que
+	-- cargue el perfil, y no queremos retrasar por eso el resto del arranque.
+	-- Mientras tanto el balón se ve con el color por defecto.
+	task.spawn(function()
+		self:_applySkin(InventoryService:GetSnapshot():expect().equipped)
+	end)
+end
+
+function BallController:_applySkin(equipped)
+	-- Sin skin equipada (o con una que ya no está en el catálogo), el color
+	-- de siempre.
+	self._ball.Color = Catalog.GetBallColor(equipped) or BallConfig.Color
 end
 
 -- Dónde estaría el balón en su punto más bajo AHORA MISMO: el punto de

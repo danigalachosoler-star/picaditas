@@ -25,10 +25,13 @@ export type Item = {
 	-- Solo mascotas: fracción de monedas extra mientras está equipada.
 	-- 0.05 = +5%. Se suma al multiplicador del CurrencyService.
 	coinBonus: number?,
-	-- Solo skins de pelota: color del balón. TODAVÍA NO ESTÁ ENCHUFADO a nada
-	-- visual; es el dato listo para cuando se pinte el balón equipado.
+	-- Solo skins de pelota: color con el que se pinta el balón al equiparla.
 	color: Color3?,
 }
+
+-- Id de la categoría de skins de pelota. Con nombre para no repartir el texto
+-- "ballskin" a pelo por el código.
+local BALL_SKIN_CATEGORY = "ballskin"
 
 -- De cada categoría se puede llevar UNA cosa equipada a la vez.
 Catalog.Categories = {
@@ -135,6 +138,17 @@ function Catalog.GetCoinBonus(equipped: { [string]: string }?): number
 		end
 	end
 	return bonus
+end
+
+-- Color del balón según la skin equipada, o nil si no lleva ninguna.
+-- Igual que GetCoinBonus: función pura sobre la tabla `Equipped` del perfil,
+-- así quien la use no depende del servicio de inventario.
+--
+-- Devuelve nil también si el id guardado ya no está en el catálogo (una skin
+-- retirada), para que el que llame pueda caer al color por defecto.
+function Catalog.GetBallColor(equipped: { [string]: string }?): Color3?
+	local item = Catalog.GetItem(equipped and equipped[BALL_SKIN_CATEGORY])
+	return item and item.color
 end
 
 return Catalog

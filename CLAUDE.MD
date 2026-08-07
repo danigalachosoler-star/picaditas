@@ -50,3 +50,4 @@ Solo esto en la primera versión: barra de ritmo + input + sistema de combo + mo
 
 - Explica los conceptos, no solo des código: estamos aprendiendo Roblox/Luau.
 - Cuando corrijamos algo que debería ser permanente, proponnos actualizar este CLAUDE.md.
+No edites, crees ni actualices archivos de docs/ (vault de Obsidian). La documentación la mantiene el usuario a mano. No leas docs/ salvo que se te pida explícitamente.

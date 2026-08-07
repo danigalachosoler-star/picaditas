@@ -32,7 +32,13 @@ end
 
 local InventoryService = Knit.CreateService({
 	Name = "InventoryService",
-	Client = {},
+	Client = {
+		-- Servidor → cliente: "esto es lo que llevas puesto ahora".
+		-- Se manda la tabla `Equipped` entera, no solo lo que cambió: quien
+		-- escuche resuelve lo suyo contra el catálogo sin preguntar nada más.
+		-- Hoy lo usa el balón para pintarse con su skin.
+		EquippedChanged = Knit.CreateSignal(),
+	},
 })
 
 function InventoryService:KnitInit()
@@ -211,6 +217,12 @@ function InventoryService:Equip(player: Player, itemId: any): Result
 
 	-- Equipar lo que ya llevas puesto no es un error, simplemente no cambia nada.
 	profile.Data.Equipped[item.category] = item.id
+
+	-- Se avisa desde AQUÍ y no desde la tienda: así cualquier cosa que equipe
+	-- en el futuro (una compra que auto-equipa, una recompensa, un comando)
+	-- refresca lo visual sola, sin acordarse de avisar a nadie.
+	-- Clonado: por la red no sale la tabla viva del perfil.
+	self.Client.EquippedChanged:Fire(player, table.clone(profile.Data.Equipped))
 
 	return {
 		ok = true,

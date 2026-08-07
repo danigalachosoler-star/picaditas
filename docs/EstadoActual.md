@@ -47,7 +47,6 @@ Dónde estamos ahora mismo. Actualizar esta nota cuando cambie algo importante.
 Después, el resto del espectáculo: partículas, sonido y cámara. Los dos puntos de conexión están marcados en el código (`SkillController:_playEpicPlaceholder` y `CharacterAnimationController:_onContact`).
 
 Pendientes menores:
-- Que la skin de pelota equipada se vea (el `color` está en el catálogo, el `BallController` no lo lee).
 - Imágenes de los items (el `ImageLabel` ya está en cada fila, falta darle `Image`).
 
 ## Alcance del MVP (recordatorio)
